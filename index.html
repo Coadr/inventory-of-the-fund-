@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    :root {
+      --glass: rgba(255, 255, 255, 0.05);
+      --glass-border: rgba(255, 255, 255, 0.1);
+      --primary: #00d2ff; --success: #00ff88; --warning: #f59e0b; --text: #ffffff;
+    }
+    body { 
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      font-family: 'Segoe UI', Tahoma, sans-serif; color: var(--text); margin: 0; padding: 10px; padding-bottom: 220px;
+    }
+    input { 
+      font-variant-numeric: lining-nums tabular-nums; 
+      font-feature-settings: "lnum", "tnum";
+    }
+    .app-wrapper { max-width: 500px; margin: auto; }
+    .glass-card { background: var(--glass); backdrop-filter: blur(15px); border: 1px solid var(--glass-border); border-radius: 20px; padding: 15px; margin-bottom: 15px; }
+    
+    /* تنسيق شريط أسعار الصرف الجديد */
+    .exchange-rates {
+      display: flex;
+      justify-content: space-around;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 12px;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px dashed var(--glass-border);
+    }
+    .rate-item { text-align: center; }
+    .rate-item small { display: block; font-size: 10px; color: #aaa; margin-bottom: 2px; }
+    .rate-item span { font-weight: bold; font-size: 14px; }
+
+    .section-label { font-size: 12px; color: #888; margin-top: 15px; margin-bottom: 8px; display: block; border-right: 3px solid var(--primary); padding-right: 8px; }
+    
+    .currency-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .input-group { background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 12px; padding: 8px; }
+    .input-group label { display: block; font-size: 10px; color: #aaa; margin-bottom: 3px; }
+    .input-group input { width: 100%; background: none; border: none; border-bottom: 1px solid #444; color: var(--text); font-weight: bold; font-size: 15px; outline: none; }
+    .input-group input:focus { border-bottom-color: var(--primary); }
+    
+    .yer-input { color: #00d2ff !important; }
+    .sar-input { color: #00ff88 !important; }
+    .aed-input { color: #f59e0b !important; }
+
+    .dock { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(20, 30, 48, 0.95); backdrop-filter: blur(20px); border-radius: 20px 20px 0 0; padding: 15px; border-top: 2px solid var(--primary); z-index: 1000; }
+    .totals-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
+    .total-item { background: rgba(0,0,0,0.3); padding: 8px; border-radius: 10px; text-align: center; font-size: 12px; }
+    .btn-main { background: linear-gradient(to right, #00d2ff, #3a7bd5); border: none; border-radius: 12px; color: white; padding: 15px; font-weight: bold; width: 100%; cursor: pointer; }
+  </style>
+</head>
+<body>
+
+<div class="app-wrapper">
+  <div class="glass-card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+       <select id="empName" style="background: #1e293b; border: 1px solid #555; color: white; width: 55%; padding: 8px; border-radius: 8px;">
+         <option value="" disabled selected>👤 اختر الموظف</option>
+         <option value="صندوق القبض النقدي">صندوق القبض النقدي</option>
+         <option value="صندوق وليد الفقير">صندوق وليد الفقير</option>
+         <option value="صندوق العمل الإضافي">صندوق العمل الإضافي</option>
+         <option value="صندوق تواجد سعده">صندوق تواجد سعده</option>
+         <option value="صندوق قبض الحوالات">صندوق قبض الحوالات</option>
+         <option value="صندوق نجيب ناصران">صندوق نجيب ناصران</option>
+       </select>
+       <div style="text-align: left;">
+         <small>المطلوب:</small><br>
+         <input type="number" id="yer_req" oninput="calc()" placeholder="0" style="background:none; border:none; color:var(--primary); font-weight:bold; width:90px; font-size: 16px;">
+       </div>
+    </div>
+
+    <div class="exchange-rates">
+      <div class="rate-item">
+        <small>صرف السعودي 🇸🇦</small>
+        <input type="number" value="533.5" step="0.1" style="color: var(--success); background: none; border: none; text-align: center; font-weight: bold; width: 60px; outline: none; font-size: 14px;">
+      </div>
+      <div style="width: 1px; height: 20px; background: var(--glass-border);"></div>
+      <div class="rate-item">
+        <small>صرف الإماراتي 🇦🇪</small>
+        <input type="number" value="535.0" step="0.1" style="color: var(--warning); background: none; border: none; text-align: center; font-weight: bold; width: 60px; outline: none; font-size: 14px;">
+      </div>
+      <div style="width: 1px; height: 20px; background: var(--glass-border);"></div>
+      <div class="rate-item">
+        <small>صرف الدولار 🇺🇸</small>
+        <input type="number" value="1965" step="1" style="color: #ffffff; background: none; border: none; text-align: center; font-weight: bold; width: 60px; outline: none; font-size: 14px;">
+      </div>
+    </div>
+
+    </div>
+  </div>
+
+  <span class="section-label">🇾🇪 مبالغ الريال اليمني</span>
+  <div class="currency-row">
+    <div class="input-group"><label>إجمالي الألف</label><input type="number" class="val-input yer-input" id="y1000" oninput="calc()" placeholder="0"></div>
+    <div class="input-group"><label>إجمالي الخمسمئة</label><input type="number" class="val-input yer-input" id="y500" oninput="calc()" placeholder="0"></div>
+    <div class="input-group"><label>إجمالي المئتين</label><input type="number" class="val-input yer-input" id="y200" oninput="calc()" placeholder="0"></div>
+    <div class="input-group"><label>إجمالي المئة</label><input type="number" class="val-input yer-input" id="y100" oninput="calc()" placeholder="0"></div>
+  </div>
+
+  <span class="section-label" style="border-color: var(--success);">🇸🇦 مبالغ الريال السعودي</span>
+  <div class="currency-row">
+    <div class="input-group"><label>إجمالي الـ 500</label><input type="number" class="val-input sar-input" id="s500" oninput="calc()" placeholder="0"></div>
+    <div class="input-group"><label>إجمالي الـ 200</label><input type="number" class="val-input sar-input" id="s200" oninput="calc()" placeholder="0"></div>
+    <div class="input-group"><label>إجمالي الـ 100</label><input type="number" class="val-input sar-input" id="s100" oninput="calc()" placeholder="0"></div>
+    <div class="input-group"><label>إجمالي الـ 50</label><input type="number" class="val-input sar-input" id="s50" oninput="calc()" placeholder="0"></div>
+    <div class="input-group"><label>مبالغ أخرى</label><input type="number" class="val-input sar-input" id="s_other" oninput="calc()" placeholder="0"></div>
+  </div>
+
+  <span class="section-label" style="border-color: var(--warning);">🇦🇪 مبالغ الدرهم الإماراتي</span>
+  <div class="currency-row">
+    <div class="input-group"><label>إجمالي الـ 500</label><input type="number" class="val-input aed-input" id="a500" oninput="calc()" placeholder="0"></div>
+    <div class="input-group"><label>إجمالي الـ 100</label><input type="number" class="val-input aed-input" id="a100" oninput="calc()" placeholder="0"></div>
+    <div class="input-group"><label>إجمالي الـ 50</label><input type="number" class="val-input aed-input" id="a50" oninput="calc()" placeholder="0"></div>
+    <div class="input-group"><label>مبالغ أخرى</label><input type="number" class="val-input aed-input" id="a_other" oninput="calc()" placeholder="0"></div>
+  </div>
+
+  <div class="dock">
+    <div class="totals-grid">
+      <div class="total-item" style="border-bottom: 2px solid var(--primary);"><small>يمني</small><br><b id="sumYer">0</b></div>
+      <div class="total-item" style="border-bottom: 2px solid var(--success);"><small>سعودي</small><br><b id="sumSar">0</b></div>
+      <div class="total-item" style="border-bottom: 2px solid var(--warning);"><small>إماراتي</small><br><b id="sumAed">0</b></div>
+    </div>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+      <div><small>إجمالي الجرد (يمني):</small><br><b id="grandTotal" style="color:var(--primary); font-size:18px;">0</b></div>
+      <div id="diffBadge" style="font-size:12px; padding:5px 10px; border-radius:8px; background:rgba(255,255,255,0.1)">0</div>
+    </div>
+    <div style="display: grid; grid-template-columns: 1fr 3fr; gap: 10px;">
+        <button onclick="resetAll()" style="background:rgba(255,255,255,0.1); border:1px solid #555; color:white; border-radius:12px; cursor:pointer;">❌</button>
+        <button class="btn-main" onclick="handleSave()">إرسال البيانات للأرشفة 💾</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  function calc() {
+    const v = (id) => Number(document.getElementById(id).value) || 0;
+    
+    // الجمع المباشر للمبالغ المدخلة (بدون ضرب)
+    const yerSum = v('y1000') + v('y500') + v('y200') + v('y100');
+    const sarSum = v('s500') + v('s200') + v('s100') + v('s50') + v('s_other');
+    const aedSum = v('a500') + v('a100') + v('a50') + v('a_other');
+
+    document.getElementById('sumYer').innerText = yerSum.toLocaleString('en-US');
+    document.getElementById('sumSar').innerText = sarSum.toLocaleString('en-US');
+    document.getElementById('sumAed').innerText = aedSum.toLocaleString('en-US');
+
+    const reqYer = v('yer_req');
+    const diffYer = yerSum - reqYer;
+
+    document.getElementById('grandTotal').innerText = yerSum.toLocaleString('en-US') + " YER";
+    
+    const badge = document.getElementById('diffBadge');
+    if(diffYer < 0) {
+      badge.innerText = "عجز: " + Math.abs(diffYer).toLocaleString('en-US');
+      badge.style.color = "#ff4b2b";
+    } else {
+      badge.innerText = "وفر: " + diffYer.toLocaleString('en-US');
+      badge.style.color = "#00ff88";
+    }
+  }
+
+  function resetAll() {
+    if(confirm("هل تريد تصفير جميع الخانات؟")) {
+        document.querySelectorAll('input').forEach(i => i.value = '');
+        document.getElementById('empName').selectedIndex = 0;
+        calc();
+    }
+  }
+
+  async function handleSave() {
+    const name = document.getElementById('empName').value;
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbwQ2qwXcNXbZu6duPV0105gooKNL6gl_WSuo0l4W4BIIx6GFnA-bPvtL01UGRxluGF6RA/exec'; 
+
+    if(!name) { alert("⚠️ يرجى اختيار اسم الموظف!"); return; }
+
+    const btn = document.querySelector('.btn-main');
+    btn.innerText = "⏳ جاري الأرشفة...";
+    btn.disabled = true;
+
+    const payload = {
+      timestamp: new Date().toLocaleString('en-GB'),
+      employee: name,
+      required: document.getElementById('yer_req').value || 0,
+      totalYer: document.getElementById('sumYer').innerText,
+      sar: document.getElementById('sumSar').innerText,
+      aed: document.getElementById('sumAed').innerText,
+      diff: document.getElementById('diffBadge').innerText
+    };
+
+    try {
+      await fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
+      alert("✅ تم الحفظ بنجاح!");
+      resetAll();
+    } catch (e) {
+      alert("❌ خطأ في الاتصال");
+    } finally {
+      btn.innerText = "إرسال البيانات للأرشفة 💾";
+      btn.disabled = false;
+    }
+  }
+</script>
+</body>
+</html>
