@@ -76,17 +76,17 @@
     <div class="exchange-rates">
       <div class="rate-item">
         <small>صرف السعودي 🇸🇦</small>
-        <input type="number" value="533.5" step="0.1" style="color: var(--success); background: none; border: none; text-align: center; font-weight: bold; width: 60px; outline: none; font-size: 14px;">
+        <input type="number" value="" step="0.1" style="color: var(--success); background: none; border: none; text-align: center; font-weight: bold; width: 60px; outline: none; font-size: 14px;">
       </div>
       <div style="width: 1px; height: 20px; background: var(--glass-border);"></div>
       <div class="rate-item">
         <small>صرف الإماراتي 🇦🇪</small>
-        <input type="number" value="535.0" step="0.1" style="color: var(--warning); background: none; border: none; text-align: center; font-weight: bold; width: 60px; outline: none; font-size: 14px;">
+        <input type="number" value="" step="0.1" style="color: var(--warning); background: none; border: none; text-align: center; font-weight: bold; width: 60px; outline: none; font-size: 14px;">
       </div>
       <div style="width: 1px; height: 20px; background: var(--glass-border);"></div>
       <div class="rate-item">
         <small>صرف الدولار 🇺🇸</small>
-        <input type="number" value="1965" step="1" style="color: #ffffff; background: none; border: none; text-align: center; font-weight: bold; width: 60px; outline: none; font-size: 14px;">
+        <input type="number" value="" step="1" style="color: #ffffff; background: none; border: none; text-align: center; font-weight: bold; width: 60px; outline: none; font-size: 14px;">
       </div>
     </div>
 
@@ -134,12 +134,11 @@
     </div>
   </div>
 </div>
-
 <script>
   function calc() {
     const v = (id) => Number(document.getElementById(id).value) || 0;
     
-    // الجمع المباشر للمبالغ المدخلة (بدون ضرب)
+    // الجمع المباشر للمبالغ المدخلة (بدون ضرب) كما طلبت
     const yerSum = v('y1000') + v('y500') + v('y200') + v('y100');
     const sarSum = v('s500') + v('s200') + v('s100') + v('s50') + v('s_other');
     const aedSum = v('a500') + v('a100') + v('a50') + v('a_other');
@@ -173,35 +172,78 @@
 
   async function handleSave() {
     const name = document.getElementById('empName').value;
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbwQ2qwXcNXbZu6duPV0105gooKNL6gl_WSuo0l4W4BIIx6GFnA-bPvtL01UGRxluGF6RA/exec'; 
+    // رابط السكربت الخاص بك
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbxKOwbkQasazvoNIedElgmgSCCNV6y9rIG6kgmZKsvaz-wwOxBTpCvq9sWEKsdbu9kf/exec'; 
 
-    if(!name) { alert("⚠️ يرجى اختيار اسم الموظف!"); return; }
+    if(!name) { 
+      alert("⚠️ يرجى اختيار اسم الموظف أولاً!"); 
+      return; 
+    }
 
     const btn = document.querySelector('.btn-main');
+    const originalText = btn.innerText;
     btn.innerText = "⏳ جاري الأرشفة...";
     btn.disabled = true;
 
+    // دالة مساعدة لجلب القيم الرقمية
+    const v = (id) => document.getElementById(id).value || "0";
+    
+    // جلب أسعار الصرف من الحقول (سعودي، إماراتي، دولار بالترتيب)
+    const rates = document.querySelectorAll('.exchange-rates input');
+
+    // تجهيز البيانات بالترتيب الذي طلبته للشيت
     const payload = {
-      timestamp: new Date().toLocaleString('en-GB'),
+      timestamp: new Date().toLocaleString('en-GB', { hour12: true }),
       employee: name,
-      required: document.getElementById('yer_req').value || 0,
+       required: v('yer_req'),
+      // بيانات الريال اليمني
+      y1000: v('y1000'),
+      y500: v('y500'),
+      y200: v('y200'),
+      y100: v('y100'),
       totalYer: document.getElementById('sumYer').innerText,
-      sar: document.getElementById('sumSar').innerText,
-      aed: document.getElementById('sumAed').innerText,
-      diff: document.getElementById('diffBadge').innerText
+      // بيانات الريال السعودي
+      s500: v('s500'),
+      s200: v('s200'),
+      s100: v('s100'),
+      s50: v('s50'),
+      sOther: v('s_other'),
+      totalSar: document.getElementById('sumSar').innerText,
+      // بيانات الدرهم الإماراتي
+      a500: v('a500'),
+      a100: v('a100'),
+      a50: v('a50'),
+      aOther: v('a_other'),
+      totalAed: document.getElementById('sumAed').innerText,
+      // الوفر والعجز
+      diff: document.getElementById('diffBadge').innerText,
+      // أسعار الصرف
+      rateSar: rates[0].value || "0",
+      rateAed: rates[1].value || "0",
+      rateUsd: rates[2].value || "0"
     };
 
     try {
-      await fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
-      alert("✅ تم الحفظ بنجاح!");
-      resetAll();
+      // إرسال البيانات بنمط no-cors للتعامل مع Google Apps Script
+      await fetch(scriptURL, { 
+        method: 'POST', 
+        mode: 'no-cors', 
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload) 
+      });
+      
+      alert("✅ تم حفظ البيانات وتنسيقها في الشيت بنجاح!");
+      resetAll(); // تصفير النموذج بعد النجاح
     } catch (e) {
-      alert("❌ خطأ في الاتصال");
+      alert("❌ حدث خطأ في الاتصال، تأكد من إعدادات النشر في Apps Script");
+      console.error(e);
     } finally {
-      btn.innerText = "إرسال البيانات للأرشفة 💾";
+      btn.innerText = originalText;
       btn.disabled = false;
     }
   }
 </script>
+
 </body>
-</html>
+  </html>
+  
